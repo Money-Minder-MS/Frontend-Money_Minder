@@ -1,0 +1,151 @@
+<div class="page">
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <app-stat-card label="Total utilisateurs" [value]="users.length.toString()" icon="users" color="primary"></app-stat-card>
+    <app-stat-card label="Administrateurs" [value]="countAdmins.toString()" icon="check" color="secondary"></app-stat-card>
+    <app-stat-card label="Clients" [value]="countClients.toString()" icon="user" color="warning"></app-stat-card>
+    <app-stat-card label="Rôles définis" [value]="roles.length.toString()" icon="check" color="success"></app-stat-card>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="page-toolbar">
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" placeholder="Rechercher un utilisateur..." [(ngModel)]="search" />
+    </div>
+
+    <select class="select-box" [(ngModel)]="filterRole">
+      <option [ngValue]="0">Tous les rôles</option>
+      <option *ngFor="let r of roles" [ngValue]="r.id">{{ r.nom }}</option>
+    </select>
+
+    <div class="toolbar-spacer"></div>
+
+    <button class="btn btn-primary-g" (click)="openAdd()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Nouvel utilisateur
+    </button>
+  </div>
+
+  <div class="state-box" *ngIf="loading">Chargement des utilisateurs...</div>
+  <div class="state-box error" *ngIf="errorMsg && !loading">{{ errorMsg }}</div>
+
+  <!-- Table -->
+  <div class="table-card" *ngIf="!loading && !errorMsg">
+    <table class="data-table" *ngIf="list.length; else empty">
+      <thead>
+        <tr>
+          <th>Utilisateur</th>
+          <th>Email</th>
+          <th>Téléphone</th>
+          <th>Rôle</th>
+          <th style="text-align:right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of list">
+          <td>
+            <div class="user-cell">
+              <div class="uc-avatar">{{ (u.prenom||'?')[0] }}{{ (u.nom||'')[0] }}</div>
+              <span class="td-strong">{{ u.prenom }} {{ u.nom }}</span>
+            </div>
+          </td>
+          <td class="td-muted">{{ u.email }}</td>
+          <td class="td-muted">{{ u.telephone || '—' }}</td>
+          <td>
+            <span class="badge" [class.badge-primary]="isAdmin(u.roleId)" [class.badge-info]="!isAdmin(u.roleId)">
+              {{ roleName(u.roleId) }}
+            </span>
+          </td>
+          <td>
+            <div class="cell-actions">
+              <button class="icon-btn edit" (click)="openEdit(u)" aria-label="Modifier">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+              </button>
+              <button class="icon-btn del" (click)="askDelete(u)" aria-label="Supprimer">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #empty>
+      <div class="table-empty">
+        <app-empty-state title="Aucun utilisateur" message="Aucun utilisateur ne correspond à votre recherche."></app-empty-state>
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<!-- Modal add/edit -->
+<app-modal
+  [open]="modalOpen"
+  [title]="editing ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur'"
+  [subtitle]="editing ? 'Mettez à jour le compte' : 'Créez un nouveau compte utilisateur'"
+  (closed)="modalOpen = false">
+
+  <div class="form-grid">
+    <div class="form-group">
+      <label class="form-label">Prénom</label>
+      <input class="form-input" type="text" [(ngModel)]="form.prenom" placeholder="Prénom" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nom</label>
+      <input class="form-input" type="text" [(ngModel)]="form.nom" placeholder="Nom" />
+    </div>
+    <div class="form-group full">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" [(ngModel)]="form.email" placeholder="email@exemple.com" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Téléphone</label>
+      <input class="form-input" type="tel" [(ngModel)]="form.telephone" placeholder="+216 ..." />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Date de naissance</label>
+      <input class="form-input" type="date" [(ngModel)]="form.dateNaissance" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Rôle</label>
+      <select class="form-select" [(ngModel)]="form.roleId">
+        <option *ngFor="let r of roles" [ngValue]="r.id">{{ r.nom }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ editing ? 'Nouveau mot de passe' : 'Mot de passe' }}</label>
+      <input class="form-input" type="password" [(ngModel)]="form.motDePasse" [placeholder]="editing ? 'Laisser vide pour ne pas changer' : '••••••••'" />
+    </div>
+    <div class="form-group full" *ngIf="formError">
+      <span class="form-error">{{ formError }}</span>
+    </div>
+  </div>
+
+  <div modal-footer>
+    <button class="btn btn-ghost" (click)="modalOpen = false">Annuler</button>
+    <button class="btn btn-primary-g" (click)="save()" [disabled]="saving">
+      {{ saving ? 'Enregistrement...' : (editing ? 'Enregistrer' : 'Créer') }}
+    </button>
+  </div>
+</app-modal>
+
+<!-- Confirm delete -->
+<app-confirm-dialog
+  [open]="confirmOpen"
+  title="Supprimer cet utilisateur ?"
+  [message]="(toDelete?.prenom || '') + ' ' + (toDelete?.nom || '') + ' sera définitivement supprimé.'"
+  confirmLabel="Supprimer"
+  (confirmed)="confirmDelete()"
+  (cancelled)="confirmOpen = false">
+</app-confirm-dialog>
+
+<!-- Toast -->
+<div class="mm-toast" [ngClass]="toastType" *ngIf="toast">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  {{ toast }}
+</div>

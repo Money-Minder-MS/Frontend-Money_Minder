@@ -1,0 +1,154 @@
+<div class="page">
+  <!-- Toolbar -->
+  <div class="page-toolbar">
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" placeholder="Rechercher un sujet..." [(ngModel)]="search" />
+    </div>
+
+    <div class="toolbar-spacer"></div>
+
+    <button class="btn btn-primary-g" (click)="openCreate()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Nouveau sujet
+    </button>
+  </div>
+
+  <div class="state-box" *ngIf="loading">Chargement du forum...</div>
+  <div class="state-box error" *ngIf="errorMsg && !loading">{{ errorMsg }}</div>
+
+  <!-- List -->
+  <div class="forum-list" *ngIf="!loading && !errorMsg && list.length">
+    <div class="topic" *ngFor="let s of list" (click)="openDetail(s)">
+      <div class="topic-avatar">{{ (s.auteur || '?')[0] }}</div>
+      <div class="topic-main">
+        <div class="topic-head">
+          <h4>{{ s.titre }}</h4>
+          <span class="badge badge-info" *ngIf="isMine(s)">Mon sujet</span>
+        </div>
+        <p class="topic-extract">{{ s.contenu }}</p>
+        <div class="topic-meta">
+          <span class="tm-author">{{ s.auteur }}</span>
+          <span class="dot-sep">·</span>
+          <span>{{ shortDate(s.dateCreation) }}</span>
+        </div>
+      </div>
+      <div class="topic-side">
+        <button *ngIf="isMine(s)" class="icon-btn del" (click)="askDelete(s, $event)" aria-label="Supprimer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+        <span class="rec-chevron">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-card" *ngIf="!loading && !errorMsg && !list.length">
+    <app-empty-state
+      title="Aucun sujet"
+      message="Lancez la première discussion et partagez vos astuces avec la communauté."
+      actionLabel="Créer un sujet"
+      (action)="openCreate()">
+    </app-empty-state>
+  </div>
+</div>
+
+<!-- Modal create -->
+<app-modal
+  [open]="createOpen"
+  title="Nouveau sujet de discussion"
+  subtitle="Partagez une question ou une astuce avec la communauté"
+  (closed)="createOpen = false">
+
+  <div class="form-grid">
+    <div class="form-group full">
+      <label class="form-label">Titre du sujet</label>
+      <input class="form-input" type="text" [(ngModel)]="form.titre" placeholder="Ex : Comment réduire mon budget courses ?" />
+    </div>
+    <div class="form-group full">
+      <label class="form-label">Contenu</label>
+      <textarea class="form-textarea" [(ngModel)]="form.contenu" placeholder="Développez votre sujet..."></textarea>
+    </div>
+    <div class="form-group full" *ngIf="formError">
+      <span class="form-error">{{ formError }}</span>
+    </div>
+  </div>
+
+  <div modal-footer>
+    <button class="btn btn-ghost" (click)="createOpen = false">Annuler</button>
+    <button class="btn btn-primary-g" (click)="submitPost()" [disabled]="saving">
+      {{ saving ? 'Publication...' : 'Publier' }}
+    </button>
+  </div>
+</app-modal>
+
+<!-- Modal detail -->
+<app-modal
+  [open]="detailOpen"
+  [title]="selected?.titre || ''"
+  size="lg"
+  (closed)="detailOpen = false">
+
+  <div class="topic-detail" *ngIf="selected">
+    <div class="td-author">
+      <div class="td-avatar">{{ (selected.auteur || '?')[0] }}</div>
+      <div>
+        <div class="td-name">{{ selected.auteur }}</div>
+        <div class="td-date">{{ shortDate(selected.dateCreation) }}</div>
+      </div>
+    </div>
+    <p class="td-content">{{ selected.contenu }}</p>
+
+    <div class="comments-title">
+      {{ comments.length }} commentaire{{ comments.length > 1 ? 's' : '' }}
+    </div>
+
+    <div class="state-box" *ngIf="commentsLoading">Chargement des commentaires...</div>
+
+    <div class="comments" *ngIf="!commentsLoading">
+      <div class="comment" *ngFor="let c of comments">
+        <div class="c-avatar">{{ (c.auteur || '?')[0] }}</div>
+        <div class="c-body">
+          <div class="c-head">
+            <span class="c-author">{{ c.auteur }}</span>
+            <span class="c-date">{{ shortDate(c.dateCreation) }}</span>
+          </div>
+          <p>{{ c.contenu }}</p>
+        </div>
+      </div>
+      <div class="comments-empty" *ngIf="!comments.length">
+        Soyez le premier à commenter ce sujet.
+      </div>
+    </div>
+
+    <div class="comment-box">
+      <input class="form-input" type="text" [(ngModel)]="newComment" placeholder="Écrire un commentaire..." (keyup.enter)="addComment()" />
+      <button class="btn btn-primary-g" (click)="addComment()" [disabled]="!newComment.trim()">Envoyer</button>
+    </div>
+  </div>
+
+  <div modal-footer>
+    <button class="btn btn-ghost" (click)="detailOpen = false">Fermer</button>
+  </div>
+</app-modal>
+
+<!-- Confirm delete -->
+<app-confirm-dialog
+  [open]="confirmOpen"
+  title="Supprimer ce sujet ?"
+  [message]="'« ' + (toDelete?.titre || '') + ' » et ses commentaires seront supprimés.'"
+  confirmLabel="Supprimer"
+  (confirmed)="confirmDelete()"
+  (cancelled)="confirmOpen = false">
+</app-confirm-dialog>
+
+<!-- Toast -->
+<div class="mm-toast" [ngClass]="toastType" *ngIf="toast">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  {{ toast }}
+</div>

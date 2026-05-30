@@ -1,0 +1,127 @@
+<div class="page">
+  <!-- Toolbar -->
+  <div class="page-toolbar">
+    <select class="select-box" [(ngModel)]="filterStatut">
+      <option value="">Tous les statuts</option>
+      <option value="EN_ATTENTE">En attente</option>
+      <option value="EN_TRAITEMENT">En traitement</option>
+      <option value="RESOLUE">Résolue</option>
+    </select>
+
+    <div class="toolbar-spacer"></div>
+
+    <button class="btn btn-primary-g" (click)="openCreate()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Nouvelle réclamation
+    </button>
+  </div>
+
+  <div class="state-box" *ngIf="loading">Chargement des réclamations...</div>
+  <div class="state-box error" *ngIf="errorMsg && !loading">{{ errorMsg }}</div>
+
+  <!-- List -->
+  <div class="rec-list" *ngIf="!loading && !errorMsg && list.length">
+    <div class="rec-card" *ngFor="let r of list" (click)="openDetail(r)">
+      <div class="rec-main">
+        <div class="rec-top">
+          <h4>{{ r.sujet }}</h4>
+          <span class="badge" [ngClass]="statutClass(r.statut)">{{ statutLabel(r.statut) }}</span>
+        </div>
+        <p class="rec-desc">{{ r.message }}</p>
+        <div class="rec-foot">
+          <span class="rec-date">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            {{ shortDate(r.dateCreation) }}
+          </span>
+        </div>
+      </div>
+      <div class="rec-actions">
+        <button class="icon-btn del" (click)="askDelete(r, $event)" aria-label="Supprimer">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+        <span class="rec-chevron">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-card" *ngIf="!loading && !errorMsg && !list.length">
+    <app-empty-state
+      title="Aucune réclamation"
+      message="Vous n'avez aucune réclamation. Contactez le support si vous rencontrez un problème."
+      actionLabel="Créer une réclamation"
+      (action)="openCreate()">
+    </app-empty-state>
+  </div>
+</div>
+
+<!-- Modal create -->
+<app-modal
+  [open]="createOpen"
+  title="Nouvelle réclamation"
+  subtitle="Décrivez votre problème, l'équipe support en sera informée"
+  (closed)="createOpen = false">
+
+  <div class="form-grid">
+    <div class="form-group full">
+      <label class="form-label">Sujet</label>
+      <input class="form-input" type="text" [(ngModel)]="form.sujet" placeholder="Résumez votre problème" />
+    </div>
+    <div class="form-group full">
+      <label class="form-label">Message détaillé</label>
+      <textarea class="form-textarea" [(ngModel)]="form.message" placeholder="Expliquez votre problème en détail..."></textarea>
+    </div>
+    <div class="form-group full" *ngIf="formError">
+      <span class="form-error">{{ formError }}</span>
+    </div>
+  </div>
+
+  <div modal-footer>
+    <button class="btn btn-ghost" (click)="createOpen = false">Annuler</button>
+    <button class="btn btn-primary-g" (click)="submitReclamation()" [disabled]="saving">
+      {{ saving ? 'Envoi...' : 'Envoyer' }}
+    </button>
+  </div>
+</app-modal>
+
+<!-- Modal detail -->
+<app-modal
+  [open]="detailOpen"
+  [title]="selected?.sujet || ''"
+  subtitle="Détail de la réclamation"
+  (closed)="detailOpen = false">
+
+  <div class="detail" *ngIf="selected">
+    <div class="detail-badges">
+      <span class="badge" [ngClass]="statutClass(selected.statut)">{{ statutLabel(selected.statut) }}</span>
+      <span class="detail-date">{{ shortDate(selected.dateCreation) }}</span>
+    </div>
+    <div class="detail-msg">
+      <div class="dm-label">Votre message</div>
+      <p>{{ selected.message }}</p>
+    </div>
+  </div>
+
+  <div modal-footer>
+    <button class="btn btn-ghost" (click)="detailOpen = false">Fermer</button>
+  </div>
+</app-modal>
+
+<!-- Confirm delete -->
+<app-confirm-dialog
+  [open]="confirmOpen"
+  title="Supprimer cette réclamation ?"
+  [message]="'« ' + (toDelete?.sujet || '') + ' » sera définitivement supprimée.'"
+  confirmLabel="Supprimer"
+  (confirmed)="confirmDelete()"
+  (cancelled)="confirmOpen = false">
+</app-confirm-dialog>
+
+<!-- Toast -->
+<div class="mm-toast" [ngClass]="toastType" *ngIf="toast">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  {{ toast }}
+</div>

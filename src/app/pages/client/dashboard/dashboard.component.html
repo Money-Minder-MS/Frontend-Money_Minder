@@ -1,0 +1,92 @@
+<div class="state-box" *ngIf="loading">Chargement du tableau de bord...</div>
+<div class="state-box error" *ngIf="errorMsg && !loading">{{ errorMsg }}</div>
+
+<div class="page" *ngIf="!loading && !errorMsg">
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <app-stat-card label="Solde actuel" [value]="(solde | number:'1.0-0') + ' €'" icon="wallet" color="primary"></app-stat-card>
+    <app-stat-card label="Revenues totaux" [value]="(totalRevenues | number:'1.0-0') + ' €'" icon="up" color="secondary"></app-stat-card>
+    <app-stat-card label="Dépenses totales" [value]="(totalDepenses | number:'1.0-0') + ' €'" icon="down" color="danger"></app-stat-card>
+    <app-stat-card label="Objectifs actifs" [value]="objectifsActifs.toString()" icon="target" color="warning"></app-stat-card>
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-row">
+    <div class="card chart-card chart-line">
+      <div class="card-head">
+        <div>
+          <h3>Évolution des finances</h3>
+          <p>Revenues vs dépenses sur 6 mois</p>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas #lineCanvas></canvas></div>
+    </div>
+
+    <div class="card chart-card chart-dough">
+      <div class="card-head">
+        <div>
+          <h3>Répartition des revenues</h3>
+          <p>Par catégorie</p>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas #doughnutCanvas></canvas></div>
+    </div>
+  </div>
+
+  <!-- Bottom -->
+  <div class="bottom-row">
+    <!-- Recent transactions -->
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h3>Transactions récentes</h3>
+          <p>Vos derniers mouvements</p>
+        </div>
+        <a routerLink="/client/revenues" class="link-more">Tout voir</a>
+      </div>
+      <div class="tx-list" *ngIf="recentTx.length; else noTx">
+        <div class="tx-row" *ngFor="let tx of recentTx">
+          <div class="tx-ic" [class.rev]="tx.type === 'R'" [class.dep]="tx.type === 'D'">
+            <svg *ngIf="tx.type === 'R'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+            <svg *ngIf="tx.type === 'D'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+          </div>
+          <div class="tx-meta">
+            <div class="tx-label">{{ tx.label }}</div>
+            <div class="tx-sub">{{ tx.cat }} · {{ tx.date }}</div>
+          </div>
+          <div class="tx-amount" [class.rev]="tx.type === 'R'" [class.dep]="tx.type === 'D'">
+            {{ tx.type === 'R' ? '+' : '-' }}{{ tx.montant | number:'1.2-2' }} €
+          </div>
+        </div>
+      </div>
+      <ng-template #noTx>
+        <p class="empty-line">Aucune transaction pour le moment.</p>
+      </ng-template>
+    </div>
+
+    <!-- Objectifs -->
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h3>Mes objectifs</h3>
+          <p>Objectifs en cours</p>
+        </div>
+        <a routerLink="/client/objectifs" class="link-more">Gérer</a>
+      </div>
+      <div class="obj-list" *ngIf="objectifs.length; else noObj">
+        <div class="obj-row" *ngFor="let o of objectifs">
+          <div class="obj-top">
+            <span class="obj-title">{{ o.titre }}</span>
+            <span class="obj-pct">{{ o.statut }}</span>
+          </div>
+          <div class="obj-sub">
+            {{ o.montantGlobal | number:'1.0-0' }} € · mensualité {{ o.mensualite | number:'1.0-0' }} € · {{ o.mois }}/{{ o.annee }}
+          </div>
+        </div>
+      </div>
+      <ng-template #noObj>
+        <p class="empty-line">Aucun objectif défini.</p>
+      </ng-template>
+    </div>
+  </div>
+</div>

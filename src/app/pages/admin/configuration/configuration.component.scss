@@ -1,0 +1,109 @@
+.config-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1000px) {
+  .config-grid { grid-template-columns: 1fr; }
+}
+
+.config-side {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Sections list */
+.sections-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 14px;
+  background: #F8FAFB;
+  border: 1px solid #EAEEF2;
+  border-radius: 12px;
+}
+
+.sr-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  background: #fff;
+  border: 1px solid #EAEEF2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.sr-body { flex: 1; min-width: 0; }
+.sr-name { font-size: 0.86rem; font-weight: 700; color: #1B3A57; }
+.sr-desc { font-size: 0.74rem; color: #9AA8B6; }
+
+/* Switch row */
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: #F8FAFB;
+  border: 1px solid #EAEEF2;
+  border-radius: 11px;
+
+  .switch-title { font-size: 0.83rem; font-weight: 600; color: #1B3A57; }
+  .switch-sub { font-size: 0.72rem; color: #9AA8B6; margin-top: 1px; }
+}
+
+.form-foot {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #F2F5F7;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Toggle switch */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 24px;
+  flex-shrink: 0;
+
+  input { opacity: 0; width: 0; height: 0; }
+}
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: #C7D0D8;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+  }
+}
+
+.toggle input:checked + .toggle-slider {
+  background: #3D9B8E;
+  &::before { transform: translateX(18px); }
+}

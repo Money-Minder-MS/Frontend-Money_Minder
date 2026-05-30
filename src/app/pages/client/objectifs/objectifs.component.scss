@@ -1,0 +1,110 @@
+.mini-stats {
+  font-size: 0.82rem;
+  color: #6B7C8E;
+
+  strong { color: #1B3A57; font-weight: 700; }
+  .dot-sep { margin: 0 6px; color: #C7D0D8; }
+}
+
+.obj-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+@media (max-width: 1100px) { .obj-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 680px)  { .obj-grid { grid-template-columns: 1fr; } }
+
+.obj-card {
+  background: #fff;
+  border: 1px solid #EAEEF2;
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: all 0.22s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(27,58,87,0.1);
+    border-color: transparent;
+  }
+}
+
+.oc-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+}
+
+.oc-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, rgba(27,58,87,0.07), rgba(61,155,142,0.13));
+  color: #3D9B8E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.oc-titles {
+  flex: 1;
+  min-width: 0;
+
+  h4 {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #1B3A57;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.oc-cat { font-size: 0.72rem; color: #9AA8B6; }
+
+.oc-amount {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+
+  .oc-value { font-size: 1.5rem; font-weight: 800; color: #1B3A57; letter-spacing: -0.02em; }
+  .oc-sub { font-size: 0.72rem; color: #9AA8B6; }
+}
+
+.oc-info {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 12px 14px;
+  background: #F8FAFB;
+  border-radius: 11px;
+}
+
+.oc-info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+
+  span { color: #6B7C8E; }
+  strong { color: #1B3A57; font-weight: 600; }
+}
+
+.oc-comment {
+  font-size: 0.76rem;
+  color: #6B7C8E;
+  font-style: italic;
+  line-height: 1.45;
+}
+
+.oc-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid #F2F5F7;
+
+  .btn-ghost { flex: 1; }
+}

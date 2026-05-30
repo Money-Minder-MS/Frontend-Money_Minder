@@ -1,0 +1,172 @@
+<div class="page config-grid">
+  <!-- Sections de l'application -->
+  <div class="card config-sections">
+    <div class="card-head">
+      <div>
+        <h3>Sections de l'application</h3>
+        <p>Activez, désactivez ou ajoutez des modules</p>
+      </div>
+      <button class="btn btn-primary-g btn-sm" (click)="openAddSection()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Ajouter
+      </button>
+    </div>
+
+    <div class="sections-list">
+      <div class="section-row" *ngFor="let s of sections">
+        <div class="sr-icon">{{ s.icon }}</div>
+        <div class="sr-body">
+          <div class="sr-name">{{ s.nom }}</div>
+          <div class="sr-desc">{{ s.description }}</div>
+        </div>
+        <span class="badge" [class.badge-success]="s.active" [class.badge-neutral]="!s.active">
+          {{ s.active ? 'Activée' : 'Désactivée' }}
+        </span>
+        <label class="toggle">
+          <input type="checkbox" [checked]="s.active" (change)="toggleSection(s)" />
+          <span class="toggle-slider"></span>
+        </label>
+        <button class="icon-btn del" (click)="askDelete(s)" aria-label="Supprimer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="config-side">
+    <!-- Paramètres généraux -->
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h3>Paramètres généraux</h3>
+          <p>Configuration de la plateforme</p>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">Nom de l'application</label>
+          <input class="form-input" type="text" [(ngModel)]="app.nom" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Devise</label>
+          <select class="form-select" [(ngModel)]="app.devise">
+            <option value="EUR">Euro (€)</option>
+            <option value="USD">Dollar ($)</option>
+            <option value="TND">Dinar (DT)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Langue</label>
+          <select class="form-select" [(ngModel)]="app.langue">
+            <option>Français</option>
+            <option>English</option>
+            <option>العربية</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <div class="switch-row">
+            <div>
+              <div class="switch-title">Inscriptions ouvertes</div>
+              <div class="switch-sub">Autoriser les nouveaux comptes</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" [(ngModel)]="app.inscriptionOuverte" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group full">
+          <div class="switch-row">
+            <div>
+              <div class="switch-title">Mode maintenance</div>
+              <div class="switch-sub">Suspendre l'accès à la plateforme</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" [(ngModel)]="app.modeMaintenance" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="form-foot">
+        <button class="btn btn-primary-g" (click)="saveApp()">Enregistrer</button>
+      </div>
+    </div>
+
+    <!-- Profil admin -->
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h3>Mon compte administrateur</h3>
+          <p>Vos informations personnelles</p>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Prénom</label>
+          <input class="form-input" type="text" [(ngModel)]="admin.prenom" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nom</label>
+          <input class="form-input" type="text" [(ngModel)]="admin.nom" />
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" [(ngModel)]="admin.email" />
+        </div>
+      </div>
+      <div class="form-foot">
+        <button class="btn btn-primary-g" (click)="saveAdmin()">Mettre à jour</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal add section -->
+<app-modal
+  [open]="sectionModalOpen"
+  title="Nouvelle section"
+  subtitle="Ajoutez un module à l'application"
+  (closed)="sectionModalOpen = false">
+
+  <div class="form-grid">
+    <div class="form-group">
+      <label class="form-label">Icône (emoji)</label>
+      <input class="form-input" type="text" [(ngModel)]="newSection.icon" placeholder="📦" maxlength="2" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nom de la section</label>
+      <input class="form-input" type="text" [(ngModel)]="newSection.nom" placeholder="Ex : Budgets" />
+    </div>
+    <div class="form-group full">
+      <label class="form-label">Description</label>
+      <input class="form-input" type="text" [(ngModel)]="newSection.description" placeholder="À quoi sert cette section ?" />
+    </div>
+    <div class="form-group full" *ngIf="formError">
+      <span class="form-error">{{ formError }}</span>
+    </div>
+  </div>
+
+  <div modal-footer>
+    <button class="btn btn-ghost" (click)="sectionModalOpen = false">Annuler</button>
+    <button class="btn btn-primary-g" (click)="saveSection()">Ajouter</button>
+  </div>
+</app-modal>
+
+<!-- Confirm delete -->
+<app-confirm-dialog
+  [open]="confirmOpen"
+  title="Supprimer cette section ?"
+  [message]="'« ' + (toDelete?.nom || '') + ' » sera retirée de l\'application.'"
+  confirmLabel="Supprimer"
+  (confirmed)="confirmDelete()"
+  (cancelled)="confirmOpen = false">
+</app-confirm-dialog>
+
+<!-- Toast -->
+<div class="mm-toast" [ngClass]="toastType" *ngIf="toast">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  {{ toast }}
+</div>

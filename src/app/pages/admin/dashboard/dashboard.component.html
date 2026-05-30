@@ -1,0 +1,83 @@
+<div class="state-box" *ngIf="loading">Chargement du tableau de bord...</div>
+<div class="state-box error" *ngIf="errorMsg && !loading">{{ errorMsg }}</div>
+
+<div class="page" *ngIf="!loading && !errorMsg">
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <app-stat-card label="Utilisateurs" [value]="totalUsers.toString()" icon="users" color="primary"></app-stat-card>
+    <app-stat-card label="Réclamations ouvertes" [value]="reclamationsOuvertes.toString()" icon="message" color="warning"></app-stat-card>
+    <app-stat-card label="Sujets forum" [value]="sujetsForum.toString()" icon="forum" color="secondary"></app-stat-card>
+    <app-stat-card label="Volume revenues" [value]="(volumeRevenues | number:'1.0-0') + ' €'" icon="wallet" color="success"></app-stat-card>
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-row">
+    <div class="card chart-card chart-bar">
+      <div class="card-head">
+        <div>
+          <h3>Volume par module</h3>
+          <p>Nombre d'enregistrements</p>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas #barCanvas></canvas></div>
+    </div>
+
+    <div class="card chart-card chart-pie">
+      <div class="card-head">
+        <div>
+          <h3>État des réclamations</h3>
+          <p>Répartition par statut</p>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas #pieCanvas></canvas></div>
+    </div>
+  </div>
+
+  <!-- Bottom -->
+  <div class="bottom-row">
+    <!-- Recent users -->
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h3>Derniers inscrits</h3>
+          <p>Nouveaux utilisateurs</p>
+        </div>
+        <a routerLink="/admin/utilisateurs" class="link-more">Gérer</a>
+      </div>
+      <div class="u-list" *ngIf="recentUsers.length; else noU">
+        <div class="u-row" *ngFor="let u of recentUsers">
+          <div class="u-avatar">{{ (u.prenom||'?')[0] }}{{ (u.nom||'')[0] }}</div>
+          <div class="u-meta">
+            <div class="u-name">{{ u.prenom }} {{ u.nom }}</div>
+            <div class="u-email">{{ u.email }}</div>
+          </div>
+          <span class="badge" [class.badge-primary]="isAdmin(u.roleId)" [class.badge-info]="!isAdmin(u.roleId)">
+            {{ roleName(u.roleId) }}
+          </span>
+        </div>
+      </div>
+      <ng-template #noU><p class="empty-line">Aucun utilisateur.</p></ng-template>
+    </div>
+
+    <!-- Recent reclamations -->
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h3>Réclamations récentes</h3>
+          <p>À traiter en priorité</p>
+        </div>
+        <a routerLink="/admin/reclamations" class="link-more">Tout voir</a>
+      </div>
+      <div class="r-list" *ngIf="recentReclamations.length; else noR">
+        <div class="r-row" *ngFor="let r of recentReclamations">
+          <div class="r-meta">
+            <div class="r-sujet">{{ r.sujet }}</div>
+            <div class="r-user">{{ r.message }}</div>
+          </div>
+          <span class="badge" [ngClass]="statutClass(r.statut)">{{ statutLabel(r.statut) }}</span>
+        </div>
+      </div>
+      <ng-template #noR><p class="empty-line">Aucune réclamation.</p></ng-template>
+    </div>
+  </div>
+</div>

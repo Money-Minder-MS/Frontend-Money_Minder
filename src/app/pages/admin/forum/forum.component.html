@@ -1,0 +1,124 @@
+<div class="page">
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <app-stat-card label="Sujets publiés" [value]="posts.length.toString()" icon="forum" color="primary"></app-stat-card>
+    <app-stat-card label="Commentaires" [value]="totalCommentaires.toString()" icon="message" color="secondary"></app-stat-card>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="page-toolbar">
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" placeholder="Rechercher un sujet ou un auteur..." [(ngModel)]="search" />
+    </div>
+  </div>
+
+  <div class="state-box" *ngIf="loading">Chargement du forum...</div>
+  <div class="state-box error" *ngIf="errorMsg && !loading">{{ errorMsg }}</div>
+
+  <!-- List -->
+  <div class="table-card" *ngIf="!loading && !errorMsg">
+    <table class="data-table" *ngIf="list.length; else empty">
+      <thead>
+        <tr>
+          <th>Sujet</th>
+          <th>Auteur</th>
+          <th>Date</th>
+          <th>Commentaires</th>
+          <th style="text-align:right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of list">
+          <td class="td-strong">{{ p.titre }}</td>
+          <td class="td-muted">{{ p.auteur }}</td>
+          <td class="td-muted">{{ shortDate(p.dateCreation) }}</td>
+          <td class="td-muted">{{ commentCount(p.id) }}</td>
+          <td>
+            <div class="cell-actions">
+              <button class="btn btn-ghost btn-sm" (click)="openDetail(p)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                Inspecter
+              </button>
+              <button class="icon-btn del" (click)="askDeletePost(p, $event)" aria-label="Supprimer">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #empty>
+      <div class="table-empty">
+        <app-empty-state title="Aucun sujet" message="Aucun sujet de discussion ne correspond à votre recherche."></app-empty-state>
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<!-- Modal detail / moderation -->
+<app-modal
+  [open]="detailOpen"
+  [title]="selected?.titre || ''"
+  subtitle="Modération du sujet"
+  size="lg"
+  (closed)="detailOpen = false">
+
+  <div class="mod-detail" *ngIf="selected">
+    <div class="md-author">
+      <div class="md-avatar">{{ (selected.auteur || '?')[0] }}</div>
+      <div>
+        <div class="md-name">{{ selected.auteur }}</div>
+        <div class="md-date">{{ shortDate(selected.dateCreation) }}</div>
+      </div>
+    </div>
+    <p class="md-content">{{ selected.contenu }}</p>
+
+    <div class="comments-title">Commentaires à modérer</div>
+
+    <div class="state-box" *ngIf="commentsLoading">Chargement des commentaires...</div>
+
+    <div class="mod-comments" *ngIf="!commentsLoading">
+      <div class="mod-comment" *ngFor="let c of comments">
+        <div class="mc-avatar">{{ (c.auteur || '?')[0] }}</div>
+        <div class="mc-body">
+          <div class="mc-head">
+            <span class="mc-author">{{ c.auteur }}</span>
+            <span class="mc-date">{{ shortDate(c.dateCreation) }}</span>
+          </div>
+          <p>{{ c.contenu }}</p>
+        </div>
+        <button class="icon-btn del" (click)="askDeleteComment(c)" aria-label="Supprimer le commentaire">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+      </div>
+      <div class="comments-empty" *ngIf="!comments.length">
+        Aucun commentaire sur ce sujet.
+      </div>
+    </div>
+  </div>
+
+  <div modal-footer>
+    <button class="btn btn-ghost" (click)="detailOpen = false">Fermer</button>
+    <button class="btn btn-danger" (click)="askDeletePost(selected!)" *ngIf="selected">Supprimer le sujet</button>
+  </div>
+</app-modal>
+
+<!-- Confirm delete -->
+<app-confirm-dialog
+  [open]="confirmOpen"
+  [title]="confirmTitle"
+  [message]="confirmMsg"
+  confirmLabel="Supprimer"
+  (confirmed)="confirmDelete()"
+  (cancelled)="confirmOpen = false">
+</app-confirm-dialog>
+
+<!-- Toast -->
+<div class="mm-toast" [ngClass]="toastType" *ngIf="toast">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  {{ toast }}
+</div>

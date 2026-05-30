@@ -1,0 +1,127 @@
+.detail-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  .detail-client { margin-left: auto; font-size: 0.76rem; color: #9AA8B6; }
+}
+
+.detail-msg {
+  background: #F8FAFB;
+  border: 1px solid #EAEEF2;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+
+  .dm-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #9AA8B6;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+
+  p { font-size: 0.85rem; color: #1B3A57; line-height: 1.55; }
+}
+
+.statut-control {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 12px 14px;
+  background: #F8FAFB;
+  border-radius: 11px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+
+  .sc-label { font-size: 0.78rem; font-weight: 600; color: #6B7C8E; margin-right: 4px; }
+}
+
+.sc-btn {
+  padding: 6px 13px;
+  border-radius: 8px;
+  border: 1px solid #EAEEF2;
+  background: #fff;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #6B7C8E;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.18s ease;
+
+  &:hover { border-color: #3D9B8E; }
+  &.active {
+    background: linear-gradient(135deg, #1B3A57, #3D9B8E);
+    color: #fff;
+    border-color: transparent;
+  }
+}
+
+.thread-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1B3A57;
+  margin-bottom: 14px;
+}
+
+.thread {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.reply { display: flex; gap: 11px; }
+
+.reply-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1B3A57, #3D9B8E);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.reply-body {
+  flex: 1;
+  background: rgba(61,155,142,0.06);
+  border: 1px solid rgba(61,155,142,0.18);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.reply-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+
+  .reply-author { font-size: 0.82rem; font-weight: 700; color: #1B3A57; }
+  .reply-date { margin-left: auto; font-size: 0.7rem; color: #9AA8B6; }
+}
+
+.reply-body p { font-size: 0.83rem; color: #1B3A57; line-height: 1.55; }
+
+.no-rep {
+  padding: 16px;
+  background: #F8FAFB;
+  border-radius: 11px;
+  font-size: 0.8rem;
+  color: #9AA8B6;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.reply-box {
+  padding-top: 16px;
+  border-top: 1px solid #EAEEF2;
+
+  .form-label { display: block; margin-bottom: 6px; }
+}
+
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }

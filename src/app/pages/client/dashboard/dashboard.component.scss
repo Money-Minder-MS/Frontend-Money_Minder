@@ -1,0 +1,95 @@
+.charts-row {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.empty-line {
+  font-size: 0.82rem;
+  color: #9AA8B6;
+  text-align: center;
+  padding: 24px 0;
+}
+
+.obj-row { padding: 11px 0; border-bottom: 1px solid #F2F5F7; }
+.obj-row:last-child { border-bottom: none; }
+
+.bottom-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.chart-card { display: flex; flex-direction: column; }
+.chart-wrap { position: relative; flex: 1; min-height: 260px; }
+
+/* Transactions */
+.tx-list { display: flex; flex-direction: column; }
+
+.tx-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid #F2F5F7;
+
+  &:last-child { border-bottom: none; }
+}
+
+.tx-ic {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &.rev { background: rgba(61,155,142,0.12); color: #3D9B8E; }
+  &.dep { background: rgba(239,68,68,0.12);  color: #EF4444; }
+}
+
+.tx-meta { flex: 1; min-width: 0; }
+.tx-label { font-size: 0.84rem; font-weight: 600; color: #1B3A57; }
+.tx-sub { font-size: 0.72rem; color: #9AA8B6; margin-top: 1px; }
+
+.tx-amount {
+  font-size: 0.86rem;
+  font-weight: 700;
+
+  &.rev { color: #10B981; }
+  &.dep { color: #EF4444; }
+}
+
+/* Objectifs */
+.obj-list { display: flex; flex-direction: column; gap: 16px; }
+
+.obj-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 7px;
+
+  .obj-title { font-size: 0.83rem; font-weight: 600; color: #1B3A57; }
+  .obj-pct { font-size: 0.8rem; font-weight: 700; color: #3D9B8E; }
+}
+
+.obj-bar {
+  height: 8px;
+  background: #F2F5F7;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.obj-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #3D9B8E, #5FBEAB);
+  transition: width 0.6s ease;
+}
+
+.obj-sub { font-size: 0.72rem; color: #9AA8B6; margin-top: 6px; }
+
+@media (max-width: 1100px) {
+  .charts-row, .bottom-row { grid-template-columns: 1fr; }
+}
