@@ -21,6 +21,10 @@ export class AdminReclamationsComponent implements OnInit {
 
   detailOpen = false;
   selected: Reclamation | null = null;
+  draftReponse = '';
+  draftStatut = '';
+  savingReponse = false;
+  savingStatut = false;
 
   confirmOpen = false;
   toDelete: Reclamation | null = null;
@@ -85,7 +89,40 @@ export class AdminReclamationsComponent implements OnInit {
 
   openDetail(r: Reclamation): void {
     this.selected = r;
+    this.draftReponse = r.reponse || '';
+    this.draftStatut = r.statut || 'EN_ATTENTE';
     this.detailOpen = true;
+  }
+
+  saveStatut(): void {
+    if (!this.selected?.id || !this.draftStatut) return;
+    this.savingStatut = true;
+    this.reclamationService.changerStatut(this.selected.id, this.draftStatut).subscribe({
+      next: (updated) => {
+        this.savingStatut = false;
+        this.selected = updated;
+        const i = this.reclamations.findIndex((x) => x.id === updated.id);
+        if (i >= 0) this.reclamations[i] = updated;
+        this.showToast('Statut mis à jour');
+      },
+      error: () => { this.savingStatut = false; this.showToast('Échec du changement de statut', 'error'); },
+    });
+  }
+
+  saveReponse(): void {
+    if (!this.selected?.id || !this.draftReponse.trim()) return;
+    this.savingReponse = true;
+    this.reclamationService.repondre(this.selected.id, this.draftReponse.trim()).subscribe({
+      next: (updated) => {
+        this.savingReponse = false;
+        this.selected = updated;
+        this.draftStatut = updated.statut || this.draftStatut;
+        const i = this.reclamations.findIndex((x) => x.id === updated.id);
+        if (i >= 0) this.reclamations[i] = updated;
+        this.showToast('Réponse envoyée au client');
+      },
+      error: () => { this.savingReponse = false; this.showToast('Échec de l\'envoi', 'error'); },
+    });
   }
 
   askDelete(r: Reclamation, ev?: Event): void {

@@ -1,55 +1,54 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { Depense } from '../models/types';
 
 /**
- * Service Dépense — AUCUN microservice backend n'existe pour les dépenses.
- * Les données sont persistées en localStorage en attendant la création
- * du microservice. L'API (Observable) est identique à un service HTTP,
- * il suffira de remplacer le corps des méthodes le moment venu.
+ * Service Dépense — connecté au microservice Spring Boot Depense (port 8081)
+ * via l'API Gateway sur /api/depenses.
+ *
+ * Le backend exige un champ `titre` (@NotBlank). Si l'appelant ne fournit
+ * que `description`, on utilise cette valeur comme `titre` pour rester
+ * compatible avec l'UI existante.
  */
 @Injectable({ providedIn: 'root' })
 export class DepenseService {
-  private readonly storageKey = 'mm_depenses';
+  private readonly base = environment.apiUrl + '/api/depenses';
 
-  private read(): Depense[] {
-    try {
-      return JSON.parse(localStorage.getItem(this.storageKey) || '[]');
-    } catch {
-      return [];
-    }
-  }
+  constructor(private http: HttpClient) {}
 
-  private write(list: Depense[]): void {
-    localStorage.setItem(this.storageKey, JSON.stringify(list));
+  getAll(): Observable<Depense[]> {
+    return this.http.get<Depense[]>(this.base);
   }
 
   getByUser(userId: number): Observable<Depense[]> {
-    return of(this.read().filter((d) => d.userId === userId));
+    // Le backend n'expose pas /byuser : on filtre côté client.
+    return this.getAll().pipe(
+      map((list) => list.filter((d) => d.userId === userId))
+    );
   }
 
-  getAll(): Observable<Depense[]> {
-    return of(this.read());
+  getById(id: number): Observable<Depense> {
+    return this.http.get<Depense>(`${this.base}/${id}`);
   }
 
   add(d: Omit<Depense, 'id'>): Observable<Depense> {
-    const list = this.read();
-    const created: Depense = { ...d, id: list.length ? Math.max(...list.map((x) => x.id)) + 1 : 1 };
-    list.push(created);
-    this.write(list);
-    return of(created);
+    const payload = this.withTitre(d);
+    return this.http.post<Depense>(this.base, payload);
   }
 
   update(d: Depense): Observable<Depense> {
-    const list = this.read();
-    const i = list.findIndex((x) => x.id === d.id);
-    if (i >= 0) list[i] = d;
-    this.write(list);
-    return of(d);
+    const payload = this.withTitre(d);
+    return this.http.put<Depense>(`${this.base}/${d.id}`, payload);
   }
 
   delete(id: number): Observable<void> {
-    this.write(this.read().filter((x) => x.id !== id));
-    return of(void 0);
+    return this.http.delete<void>(`${this.base}/${id}`);
+  }
+
+  private withTitre<T extends { titre?: string; description?: string }>(d: T): T {
+    if (d.titre && d.titre.trim()) return d;
+    return { ...d, titre: d.description || 'Sans titre' };
   }
 }

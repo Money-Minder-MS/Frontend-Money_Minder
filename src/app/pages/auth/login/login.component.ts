@@ -35,7 +35,6 @@ export class LoginComponent {
     this.authService.login(this.email, this.password).subscribe({
       next: (user) => {
         this.loading = false;
-        // Redirection selon le rôle réel renvoyé par le backend
         this.router.navigateByUrl(
           user.role === 'ADMIN' ? '/admin/dashboard' : '/client/dashboard'
         );
@@ -45,7 +44,7 @@ export class LoginComponent {
         this.errorMessage =
           err?.message === 'Email ou mot de passe incorrect.'
             ? err.message
-            : "Connexion impossible. Vérifiez que l'API Gateway est démarrée.";
+            : "Connexion impossible. Vérifiez que l'API Gateway et Keycloak sont démarrés.";
       },
     });
   }

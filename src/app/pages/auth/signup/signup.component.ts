@@ -68,14 +68,17 @@ export class SignupComponent {
         motDePasse: this.password,
       })
       .subscribe({
-        next: () => {
+        next: (user) => {
           this.loading = false;
-          this.router.navigateByUrl('/client/dashboard');
+          this.router.navigateByUrl(
+            user.role === 'ADMIN' ? '/admin/dashboard' : '/client/dashboard'
+          );
         },
-        error: () => {
+        error: (err) => {
           this.loading = false;
           this.errorMessage =
-            "Création du compte impossible. Vérifiez que l'API Gateway est démarrée.";
+            err?.message ||
+            "Création du compte impossible. Vérifiez que Keycloak et l'API Gateway sont démarrés.";
         },
       });
   }

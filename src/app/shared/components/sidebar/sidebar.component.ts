@@ -25,6 +25,7 @@ export class SidebarComponent {
     { label: 'Mes objectifs', icon: 'target',    route: '/client/objectifs' },
     { label: 'Réclamations',  icon: 'message-circle', route: '/client/reclamations' },
     { label: 'Forum',         icon: 'users',     route: '/client/forum' },
+    { label: 'Notifications', icon: 'bell',      route: '/client/notifications' },
     { label: 'Mon profil',    icon: 'user',      route: '/client/profil' },
   ];
 

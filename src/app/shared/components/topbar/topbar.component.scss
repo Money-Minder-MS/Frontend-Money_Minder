@@ -197,9 +197,24 @@
   padding: 12px 16px;
   border-bottom: 1px solid #F2F5F7;
   transition: background 0.15s ease;
+  cursor: pointer;
+  position: relative;
 
   &:hover { background: #F8FAFB; }
+  &:hover .notif-del { opacity: 1; }
   &.unread { background: rgba(61,155,142,0.04); }
+  &.unread .notif-msg { color: #1B3A57; font-weight: 500; }
+  &.unread::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #3D9B8E;
+  }
   &:last-child { border-bottom: none; }
 }
 
@@ -215,12 +230,128 @@
   flex-shrink: 0;
 
   &.read { background: #F2F5F7; color: #9AA8B6; }
+
+  &[data-kind="revenue"]     { background: rgba(16,185,129,0.14);  color: #10B981; }
+  &[data-kind="depense"]     { background: rgba(244,63,94,0.14);   color: #F43F5E; }
+  &[data-kind="objectif"]    { background: rgba(95,190,171,0.18);  color: #2C9888; }
+  &[data-kind="reclamation"] { background: rgba(245,158,11,0.16);  color: #F59E0B; }
+  &[data-kind="post"]        { background: rgba(99,102,241,0.14);  color: #6366F1; }
+  &.read[data-kind] { background: #F2F5F7; color: #9AA8B6; }
 }
 
 .notif-body { flex: 1; min-width: 0; }
 .notif-title { font-size: 0.8rem; font-weight: 600; color: #1B3A57; }
-.notif-msg   { font-size: 0.75rem; color: #6B7C8E; margin: 2px 0; }
-.notif-date  { font-size: 0.68rem; color: #9AA8B6; }
+.notif-msg   { font-size: 0.78rem; color: #6B7C8E; line-height: 1.35; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.notif-date  { font-size: 0.68rem; color: #9AA8B6; margin-top: 4px; }
+
+.notif-actions { display: flex; align-items: flex-start; }
+.notif-del {
+  border: none;
+  background: transparent;
+  color: #9AA8B6;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.15s ease;
+
+  &:hover { background: #FEF2F2; color: #EF4444; }
+}
+
+.notif-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 36px 16px;
+  color: #9AA8B6;
+  font-size: 0.82rem;
+}
+
+.notif-foot {
+  padding: 10px 16px;
+  border-top: 1px solid #EAEEF2;
+  text-align: center;
+
+  button {
+    border: none;
+    background: none;
+    color: #3D9B8E;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+
+    &:hover { background: rgba(61,155,142,0.08); }
+  }
+}
+
+/* ===== Toast (notification temps réel) ===== */
+.notif-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  min-width: 280px;
+  max-width: 380px;
+  background: #fff;
+  border: 1px solid #EAEEF2;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(27,58,87,0.18);
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.toast-ic {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(61,155,142,0.14);
+  color: #3D9B8E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &[data-kind="revenue"]     { background: rgba(16,185,129,0.14);  color: #10B981; }
+  &[data-kind="depense"]     { background: rgba(244,63,94,0.14);   color: #F43F5E; }
+  &[data-kind="objectif"]    { background: rgba(95,190,171,0.18);  color: #2C9888; }
+  &[data-kind="reclamation"] { background: rgba(245,158,11,0.16);  color: #F59E0B; }
+  &[data-kind="post"]        { background: rgba(99,102,241,0.14);  color: #6366F1; }
+}
+
+.toast-body { flex: 1; min-width: 0; }
+.toast-title { font-size: 0.78rem; font-weight: 700; color: #1B3A57; }
+.toast-msg { font-size: 0.78rem; color: #6B7C8E; margin-top: 2px; line-height: 1.35; }
+
+.toast-close {
+  border: none;
+  background: transparent;
+  color: #9AA8B6;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover { background: #F8FAFB; color: #1B3A57; }
+}
 
 .menu-panel { width: 200px; padding: 6px; }
 

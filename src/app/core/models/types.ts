@@ -77,6 +77,8 @@ export interface Reclamation {
   message: string;
   statut?: string;          // EN_ATTENTE | EN_TRAITEMENT | RESOLUE
   dateCreation?: string;
+  reponse?: string;
+  dateReponse?: string;
   userId: number;
 }
 
@@ -99,9 +101,29 @@ export interface Commentaire {
   post: { id: number };
 }
 
-/* ===================== Dépense (local — pas de microservice) ===== */
+/* ===================== Notifications (microservice Django, port 8086) ===== */
+export type NotificationType =
+  | 'notification.revenue.ajoute'
+  | 'notification.depense.ajoutee'
+  | 'notification.objectif.atteint'
+  | 'notification.reclamation.creee'
+  | 'notification.post.cree'
+  | string;
+
+export interface Notification {
+  id: number;
+  user_id: number;
+  message: string;
+  type: NotificationType;
+  data: Record<string, any>;
+  is_read: boolean;
+  timestamp: string;            // ISO 8601
+}
+
+/* ===================== Dépense (microservice Depense, port 8081) ===== */
 export interface Depense {
   id: number;
+  titre?: string;           // requis par le backend, pris depuis description si absent
   montant: number;
   description: string;
   categorie: string;

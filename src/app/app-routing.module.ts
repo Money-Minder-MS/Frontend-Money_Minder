@@ -16,6 +16,7 @@ import { ObjectifsComponent } from './pages/client/objectifs/objectifs.component
 import { ClientReclamationsComponent } from './pages/client/reclamations/reclamations.component';
 import { ClientForumComponent } from './pages/client/forum/forum.component';
 import { ClientProfilComponent } from './pages/client/profil/profil.component';
+import { ClientNotificationsComponent } from './pages/client/notifications/notifications.component';
 
 import { AdminDashboardComponent } from './pages/admin/dashboard/dashboard.component';
 import { AdminUtilisateursComponent } from './pages/admin/utilisateurs/utilisateurs.component';
@@ -41,8 +42,9 @@ const routes: Routes = [
       { path: 'depenses',     component: DepensesComponent,           data: { title: 'Mes dépenses', subtitle: 'Suivez vos sorties d\'argent' } },
       { path: 'objectifs',    component: ObjectifsComponent,          data: { title: 'Mes objectifs', subtitle: 'Suivez vos objectifs d\'épargne' } },
       { path: 'reclamations', component: ClientReclamationsComponent, data: { title: 'Mes réclamations', subtitle: 'Contactez le support' } },
-      { path: 'forum',        component: ClientForumComponent,        data: { title: 'Forum', subtitle: 'Échangez avec la communauté' } },
-      { path: 'profil',       component: ClientProfilComponent,       data: { title: 'Mon profil', subtitle: 'Gérez votre compte' } },
+      { path: 'forum',         component: ClientForumComponent,         data: { title: 'Forum', subtitle: 'Échangez avec la communauté' } },
+      { path: 'notifications', component: ClientNotificationsComponent, data: { title: 'Mes notifications', subtitle: 'Toutes vos alertes en un coup d\'œil' } },
+      { path: 'profil',        component: ClientProfilComponent,        data: { title: 'Mon profil', subtitle: 'Gérez votre compte' } },
     ],
   },
 

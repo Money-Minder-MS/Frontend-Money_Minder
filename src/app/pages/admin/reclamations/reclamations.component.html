@@ -84,9 +84,40 @@
       <div class="dm-label">Message du client</div>
       <p>{{ selected.message }}</p>
     </div>
-    <div class="info-banner" style="margin-top:16px;margin-bottom:0">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-      Le backend Réclamation ne gère pas encore les réponses ni la modification de statut.
+
+    <div class="form-grid" style="margin-top:16px">
+      <div class="form-group">
+        <label class="form-label">Statut</label>
+        <div style="display:flex; gap:8px;">
+          <select class="form-select" [(ngModel)]="draftStatut" style="flex:1">
+            <option value="EN_ATTENTE">En attente</option>
+            <option value="EN_TRAITEMENT">En traitement</option>
+            <option value="RESOLUE">Résolue</option>
+          </select>
+          <button class="btn btn-primary-g btn-sm"
+                  (click)="saveStatut()"
+                  [disabled]="savingStatut || draftStatut === (selected.statut || 'EN_ATTENTE')">
+            {{ savingStatut ? '...' : 'Appliquer' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group full">
+        <label class="form-label">Réponse de l'administrateur</label>
+        <textarea class="form-input" rows="4" [(ngModel)]="draftReponse"
+                  placeholder="Saisissez une réponse à envoyer au client..."></textarea>
+        <div *ngIf="selected.dateReponse" class="td-muted" style="font-size:12px; margin-top:4px">
+          Dernière réponse : {{ shortDate(selected.dateReponse) }}
+        </div>
+      </div>
+
+      <div class="form-group full" style="display:flex; justify-content:flex-end">
+        <button class="btn btn-primary-g"
+                (click)="saveReponse()"
+                [disabled]="savingReponse || !draftReponse.trim()">
+          {{ savingReponse ? 'Envoi...' : 'Envoyer la réponse' }}
+        </button>
+      </div>
     </div>
   </div>
 

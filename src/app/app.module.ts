@@ -2,10 +2,11 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { UserIdInterceptor } from './core/interceptors/user-id.interceptor';
 
 // Auth
 import { LoginComponent } from './pages/auth/login/login.component';
@@ -31,6 +32,7 @@ import { ObjectifsComponent } from './pages/client/objectifs/objectifs.component
 import { ClientReclamationsComponent } from './pages/client/reclamations/reclamations.component';
 import { ClientForumComponent } from './pages/client/forum/forum.component';
 import { ClientProfilComponent } from './pages/client/profil/profil.component';
+import { ClientNotificationsComponent } from './pages/client/notifications/notifications.component';
 
 // Admin pages
 import { AdminDashboardComponent } from './pages/admin/dashboard/dashboard.component';
@@ -60,6 +62,7 @@ import { AdminConfigurationComponent } from './pages/admin/configuration/configu
     ClientReclamationsComponent,
     ClientForumComponent,
     ClientProfilComponent,
+    ClientNotificationsComponent,
     AdminDashboardComponent,
     AdminUtilisateursComponent,
     AdminCategoriesComponent,
@@ -74,7 +77,9 @@ import { AdminConfigurationComponent } from './pages/admin/configuration/configu
     HttpClientModule,
     AppRoutingModule,
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: UserIdInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
