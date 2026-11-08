@@ -1,27 +1,32 @@
-# MoneyMinderFront
+# Money Minder MS — Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.16.
+The **Angular** single-page web interface for the Money Minder MS platform. It
+talks to the backend through the API Gateway and authenticates via Keycloak.
 
-## Development server
+## Tech stack
+Angular 16 · TypeScript · Tailwind CSS
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Prerequisites
+Node.js and the Angular CLI (`npm install -g @angular/cli`).
 
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Run
+```bash
+npm install
+ng serve
+```
+App: http://localhost:4200
 
 ## Build
+```bash
+ng build        # outputs to dist/
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Backend
+Expects the Money Minder MS services running behind the
+[API Gateway](https://github.com/Money-Minder-MS/API-Gateway) (default `http://localhost:9000`).
 
-## Running unit tests
+## Part of Money Minder MS
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Part of the **Money Minder MS** platform. Full architecture and the other services:
+[API-Gateway README](https://github.com/Money-Minder-MS/API-Gateway).
 
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
